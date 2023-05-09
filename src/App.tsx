@@ -5,11 +5,9 @@ import Home from "./pages/Home";
 import CreateAccommodation from "./pages/CreateAccomodation";
 
 
-
-
 function App(){
   useEffect(() => {
-    document.title = "Airline";
+    document.title = "Bookify";
   }, []);
 
   return (
