@@ -6,11 +6,9 @@ import CreateAccommodation from "./pages/CreateAccomodation";
 import AccommodationAvailability from "./pages/AccommodationAvailability";
 
 
-
-
 function App(){
   useEffect(() => {
-    document.title = "Airline";
+    document.title = "Bookify";
   }, []);
 
   return (
