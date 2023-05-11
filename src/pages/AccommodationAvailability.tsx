@@ -21,9 +21,6 @@ function AccommodationAvailability() {
 
   useEffect(() => {
     async function fetchAvailability() {
-      //const response = await fetch('/api/availability');
-      // const data = await response.json();
-      // setAvailability(data);
       const slots: Slot[] = [
         {
           date_from: '2023-05-01',
@@ -41,7 +38,7 @@ function AccommodationAvailability() {
           price: 300,
         },
       ];
-
+  
       const reservations: Reservation[] = [
         {
           date_from: '2023-05-01',
@@ -52,10 +49,11 @@ function AccommodationAvailability() {
           date_to: '2023-05-14',
         },
       ];
-
+  
       setAvailability(slots);
       setReservations(reservations);
     }
+  
     fetchAvailability();
   }, []);
 
@@ -86,37 +84,140 @@ function AccommodationAvailability() {
   }
 
   function handleAddSlot() {
-    setAvailability([...availability, newSlot]);
-    setNewSlot({ date_from: "", date_to: "", price: 0 });
+    if (newSlot.date_from >= newSlot.date_to) {
+      alert('Invalid date range. "From" date should be before "To" date.');
+      setNewSlot({ date_from: '', date_to: '', price: 0 });
+      return;
+    }
+    
+    const overlappingSlots = availability.filter((slot) => {
+      return (
+        (slot.date_from <= newSlot.date_from && newSlot.date_from < slot.date_to) ||
+        (newSlot.date_from <= slot.date_from && slot.date_from < newSlot.date_to)
+      );
+    });
+  
+    if (overlappingSlots.length > 0) {
+      // Postoje preklapajući slotovi
+      const updatedAvailability = availability.map((slot) => {
+        const isOverlapping = overlappingSlots.some((overlappingSlot) => {
+          return slot.date_from === overlappingSlot.date_from && slot.date_to === overlappingSlot.date_to;
+        });
+  
+        if (isOverlapping) {
+          // Ažuriramo cenu samo na preklapajućim slotovima koji nisu rezervisani
+          const isReserved = reservations.some((reservation) => {
+            return (
+              (reservation.date_from <= slot.date_from && slot.date_from < reservation.date_to) ||
+              (slot.date_from <= reservation.date_from && reservation.date_from < slot.date_to)
+            );
+          });
+  
+          if (!isReserved) {
+            return { ...slot, price: newSlot.price };
+          } else {
+            alert('Accommodation is already reserved. Cannot change the price.');
+          }
+        }
+  
+        return slot;
+      });
+  
+      setAvailability(updatedAvailability);
+      setNewSlot({ date_from: '', date_to: '', price: 0 });
+    } else {
+      // Nema preklapajućih slotova, dodajemo novi slot
+      fetch('http://localhost:8000/accomodation/addSlot', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newSlot),
+      })
+        .then((response) => {
+          if (response.ok) {
+            alert('The accommodation price has been changed.');
+            setAvailability([...availability, newSlot]);
+            setNewSlot({ date_from: '', date_to: '', price: 0 });
+          } else {
+            alert('Error occurred while adding a new slot.');
+          }
+        })
+        .catch((error) => {
+          alert('Error occurred while adding a new slot.');
+          console.error(error);
+        });
+    }
   }
+  
+  
+  
+  
+  
+  
 
   return (
-    <div>
-    <div>
-        <input type="text" placeholder="From" value={newSlot.date_from} onChange={(e) => setNewSlot({ ...newSlot, date_from: e.target.value })} />
-        <input type="text" placeholder="To" value={newSlot.date_to} onChange={(e) => setNewSlot({ ...newSlot, date_to: e.target.value })} />
-        <input type="number" placeholder="Cena" value={newSlot.price} onChange={(e) => setNewSlot({ ...newSlot, price: +e.target.value })} />
-        <button onClick={handleAddSlot}>ADD</button>
-    </div>
-    <div>
-      <Calendar
-        value={calendarDate}
-        onChange={handleCalendarChange}
-        tileContent={tileContent}
-        calendarType="Hebrew"
-        minDetail="year"
-        showNeighboringMonth={true}
-        prev2Label="<<"
-        next2Label=">>"      
-        formatShortWeekday={(locale, date) => {
-          const day = date.getDay();
-          const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-          return weekdays[day];
-        }}
-      />
-    </div>
+    <div className="container">
+      <h1 className="text-center mb-4">Add Available Slots in Accommodation</h1>
+      <div className="row justify-content-center">
+        <div className="col-lg-6">
+          <div className="mb-3">
+            <input
+              className="form-control"
+              type="date"
+              placeholder="From"
+              value={newSlot.date_from}
+              onChange={(e) => setNewSlot({ ...newSlot, date_from: e.target.value })}
+            />
+          </div>
+          <div className="mb-3">
+            <input
+              className="form-control"
+              type="date"
+              placeholder="To"
+              value={newSlot.date_to}
+              onChange={(e) => setNewSlot({ ...newSlot, date_to: e.target.value })}
+            />
+          </div>
+          <div className="mb-3">
+            <input
+              className="form-control"
+              type="number"
+              placeholder="Price"
+              value={newSlot.price}
+              onChange={(e) => setNewSlot({ ...newSlot, price: +e.target.value })}
+            />
+          </div>
+          <button className="btn btn-primary mb-3" onClick={handleAddSlot}>ADD</button>
+        </div>
+        <div className="col-lg-6">
+          <div className="text-center">
+            <Calendar
+              value={calendarDate}
+              onChange={handleCalendarChange}
+              tileContent={tileContent}
+              calendarType="Hebrew"
+              minDetail="year"
+              showNeighboringMonth={true}
+              prev2Label="<<"
+              next2Label=">>"
+              formatShortWeekday={(locale, date) => {
+                const day = date.getDay();
+                const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                return weekdays[day];
+              }}
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
+  
+  
+  
+  
+  
+  
 }
 
 export default AccommodationAvailability;

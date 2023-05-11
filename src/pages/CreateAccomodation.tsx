@@ -95,11 +95,12 @@ function CreateAccommodation() {
         Kitchen: kitchen,
         Aircondition: aircondition,
         FreeParking: freeParking,
-        Image: image
+        Image: image,
+        IDHost:"623b0cc3a34d25d8567f9f83"
 
     }
     
-    fetch("http://localhost:8082/createAccommodation", {
+    fetch("http://localhost:8000/accomodation/create", {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -117,62 +118,66 @@ function CreateAccommodation() {
         };
         
         return (
-        <div className="create-accommodation">
-        <h1>Create Accommodation</h1>
-        <form onSubmit={handleSubmit}>
-        <div className="form-group">
-        <label htmlFor="name">Name:</label>
-        <input type="text" id="name" value={name} onChange={handleInputChange} />
-        {nameError && <p className="error">{nameError}</p>}
-        </div>
-        <div className="form-group">
-        <label htmlFor="location">Location:</label>
-        <input type="text" id="location" value={location} onChange={handleInputChange} />
-        {locationError && <p className="error">{locationError}</p>}
-        </div>
-        <div className="form-group">
-        <label htmlFor="minGuests">Minimum guests:</label>
-        <input type="number" id="minGuests" value={minGuests} onChange={handleInputChange} />
-        </div>
-        <div className="form-group">
-        <label htmlFor="maxGuests">Maximum guests:</label>
-        <input type="number" id="maxGuests" value={maxGuests} onChange={handleInputChange} />
-        {guestsError && <p className="error">{guestsError}</p>}
-        </div>
-        <div className="form-group">
-        <label htmlFor="wifi">Wifi:</label>
-        <input type="checkbox" id="wifi" checked={wifi} onChange={handleInputChange} />
-        </div>
-        <div className="form-group">
-        <label htmlFor="kitchen">Kitchen:</label>
-        <input type="checkbox" id="kitchen" checked={kitchen} onChange={handleInputChange} />
-        </div>
-        <div className="form-group">
-        <label htmlFor="aircondition">Air conditioning:</label>
-        <input
-                 type="checkbox"
-                 id="aircondition"
-                 checked={aircondition}
-                 onChange={handleInputChange}
-               />
-        </div>
-        <div className="form-group">
-        <label htmlFor="freeParking">Free parking:</label>
-        <input
-                 type="checkbox"
-                 id="freeParking"
-                 checked={freeParking}
-                 onChange={handleInputChange}
-               />
-        </div>
-        <div className="form-group">
-        <label htmlFor="image">Image:</label>
-        <input type="file" id="image" onChange={handleInputChange} />
-        </div>
-        <button type="submit">Create</button>
-        </form>
-        </div>
+          <div className="create-accommodation">
+            <h1>Create Accommodation</h1>
+            <form onSubmit={handleSubmit}>
+              <div className="form-group">
+                <label htmlFor="name">Name:</label>
+                <input className="form-control" type="text" id="name" value={name} onChange={handleInputChange} />
+                {nameError && <p className="error">{nameError}</p>}
+              </div>
+              <div className="form-group">
+                <label htmlFor="location">Location:</label>
+                <input className="form-control" type="text" id="location" value={location} onChange={handleInputChange} />
+                {locationError && <p className="error">{locationError}</p>}
+              </div>
+              <div className="form-group">
+                <label htmlFor="minGuests">Minimum guests:</label>
+                <input className="form-control" type="number" id="minGuests" value={minGuests} onChange={handleInputChange} />
+              </div>
+              <div className="form-group">
+                <label htmlFor="maxGuests">Maximum guests:</label>
+                <input className="form-control" type="number" id="maxGuests" value={maxGuests} onChange={handleInputChange} />
+                {guestsError && <p className="error">{guestsError}</p>}
+              </div>
+              <div className="form-group">
+                <label htmlFor="wifi">Wifi:</label>
+                <input className="form-check-input" type="checkbox" id="wifi" checked={wifi} onChange={handleInputChange} />
+              </div>
+              <div className="form-group">
+                <label htmlFor="kitchen">Kitchen:</label>
+                <input className="form-check-input" type="checkbox" id="kitchen" checked={kitchen} onChange={handleInputChange} />
+              </div>
+              <div className="form-group">
+                <label htmlFor="aircondition">Air conditioning:</label>
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  id="aircondition"
+                  checked={aircondition}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="freeParking">Free parking:</label>
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  id="freeParking"
+                  checked={freeParking}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="image">Image:</label>
+                <input className="form-control" type="file" id="image" onChange={handleInputChange} />
+              </div>
+              <button className="btn btn-primary" type="submit">Create</button>
+            </form>
+          </div>
         );
+        
+        
         }
         
         export default CreateAccommodation;
