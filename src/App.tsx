@@ -4,6 +4,10 @@ import Navbar from "./Navbar";
 import Home from "./pages/Home";
 import CreateAccommodation from "./pages/CreateAccomodation";
 import AccommodationAvailability from "./pages/AccommodationAvailability";
+import { Login } from "./pages/Login";
+import Registration from "./pages/Registration";
+import ChangePassword from "./pages/ChangePassword";
+import UpdateUser from "./pages/UpdateUser";
 
 
 function App(){
@@ -19,6 +23,10 @@ function App(){
           <Route path="/" element={<Home/>} />
           <Route path="/createAccomodation" element={<CreateAccommodation/>} />
           <Route path="/availability" element={<AccommodationAvailability/>} />
+          <Route path="/login" element={<Login/>} />
+          <Route path="/registration" element={<Registration/>} />
+          <Route path="/changePassword" element={<ChangePassword/>} />
+          <Route path="/updateUser" element={<UpdateUser/>} />
         </Routes>
       </div>
     </>
