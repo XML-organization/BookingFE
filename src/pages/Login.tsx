@@ -20,11 +20,14 @@ export function Login() {
     setPasswordError("");
 
     // Email and password required validation
-    if (!email) {
-      setEmailError("Email is required");
-    }
-    if (!password) {
-      setPasswordError("Password is required");
+    if ((!email || email === "") || (!password || password === "")) {
+      if(!email || email === ""){
+        setEmailError("Email is required");
+      }
+      if(!password || password === ""){
+        setPasswordError("Password is required");
+      }
+      return
     }
 
     // Email format validation
@@ -36,7 +39,7 @@ export function Login() {
 
 
     // If there are errors, don't submit the form
-    if (emailError || passwordError) {
+    if (emailError === "Email is required" || passwordError === "Password is required") {
       setEmailError(emailError)
       setPasswordError(passwordError)
       return;

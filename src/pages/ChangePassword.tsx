@@ -2,7 +2,7 @@ import { useState } from "react";
 import Select from 'react-select';
 import { UserType } from "../model/User";
 import { useLoggedUser } from "../hooks/UseLoggedUserInformation";
-import { RequestMessage } from "../model/ResponseMessage";
+import { ResponseMessage } from "../model/ResponseMessage";
 
 
 interface RegistrationProps {
@@ -18,10 +18,38 @@ function ChangePassword () {
   const [newPassword, setNewPassword] = useState("");
   const [repeatedNewPassword, setRepeatedNewPassword] = useState("");
 
+  //errors
+  const [oldPasswordError, setOldPasswordError] = useState("");
+  const [newPasswordError, setNewPasswordError] = useState("");
+  const [repeatedNewPasswordError, setRepeatedNewPasswordError] = useState("");
+
   
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); 
+
+    setOldPasswordError("")
+    setNewPasswordError("")
+    setRepeatedNewPasswordError("")
+
+    if ((!oldPassword || oldPassword === "") || (!newPassword || newPassword === "") || (!repeatedNewPassword || repeatedNewPassword === "")) {
+      if(!oldPassword || oldPassword === ""){
+        setOldPasswordError("Old password is required");
+      }
+      if(!newPassword || newPassword === ""){
+        setNewPasswordError("New password is required");
+      }
+
+      if(!repeatedNewPassword || repeatedNewPassword === ""){
+        setRepeatedNewPasswordError("Old password is required");
+      }
+      return
+    }
+
+    if(newPassword != repeatedNewPassword){
+      setRepeatedNewPasswordError("Passwords do not match")
+      return
+    }
 
     var user = useLoggedUser();
     console.log(user)
@@ -40,7 +68,7 @@ function ChangePassword () {
       }),
     }).then(res => res.json())
     .then(data => {
-      const message: RequestMessage = data
+      const message: ResponseMessage = data
 
       alert(message.message)
     })
@@ -56,18 +84,21 @@ function ChangePassword () {
             <input type="password" className="form-control" 
                   id="password" value={oldPassword}
                   onChange={(event) => setOldPassword(event.target.value)}/>
+                  {oldPasswordError && <div className="text-danger">{oldPasswordError}</div>}
         </div>
         <div className="mb-3">
             <label className="form-label">New password</label>
             <input type="password" className="form-control" 
                   id="password1" value={newPassword}
                   onChange={(event) => setNewPassword(event.target.value)}/>
+                  {newPasswordError && <div className="text-danger">{newPasswordError}</div>}
         </div>
         <div className="mb-3">
             <label className="form-label">Repeat new password</label>
             <input type="password" className="form-control" 
                   id="password2" value={repeatedNewPassword}
                   onChange={(event) => setRepeatedNewPassword(event.target.value)}/>
+                  {repeatedNewPasswordError && <div className="text-danger">{repeatedNewPasswordError}</div>}
         </div>
         <button type="submit" className="btn btn-primary">Confirm</button>
     </form>
