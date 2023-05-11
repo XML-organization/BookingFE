@@ -1,6 +1,7 @@
-import { useState } from "react";
-import { UserType } from "../model/User";
+import { useState, useEffect  } from "react";
+import { LoginResponse, UserType } from "../model/User";
 import { ResponseMessage } from "../model/ResponseMessage";
+import { useLoggedUser } from "../hooks/UseLoggedUserInformation";
 
 
 interface RegistrationProps {
@@ -11,38 +12,30 @@ interface MyComponentState {
     selectedOption: { value: string; label: string } | null;
 }
 
-function Registration () {
-  const [name, setName] = useState("");
-  const [surname, setSurname] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [password1, setPassword1] = useState("");
-  const [userType, setUserType] = useState("");
-  const [country, setCountry] = useState("");
-  const [city, setCity] = useState("");
-  const [street, setStreet] = useState("");
-  const [number, setNumber] = useState("");
+var userInformation = useLoggedUser()
+
+function UpdateUser () {
+
+  const [name, setName] = useState(userInformation?.name);
+  const [surname, setSurname] = useState(userInformation?.surname);
+  const [email, setEmail] = useState(userInformation?.email);
+  const [country, setCountry] = useState(userInformation?.country);
+  const [city, setCity] = useState(userInformation?.city);
+  const [street, setStreet] = useState(userInformation?.street);
+  const [number, setNumber] = useState(userInformation?.number);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); 
-    
-    var role
-    if(userType === "Host"){
-        role = UserType.Host
-    }else{
-        role = UserType.Guest
-    }
   
     fetch("http://localhost:8000/user/update", {
-      method: "POST",
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      //credentials: "include",
+      credentials: "include",
       body: JSON.stringify({
+        "id": userInformation?.id,
         "email": email,
-        "password": password,
-        "role": role,
         "name": name,
         "surname": surname,
         "country": country,
@@ -58,18 +51,10 @@ function Registration () {
       })
   };
 
-  const handleCertificateTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = event.target.value;
-
-    setUserType(value);
-
-    console.log(value)
-  }
-
   return (
     <form className="col-md-6 mx-auto" onSubmit={handleSubmit}>
         <blockquote className="blockquote text-center">
-          <p className="mb-0">Register as new user</p>
+          <p className="mb-0">Edit user</p>
         </blockquote>
         <div className="mb-3">
             <label className="form-label">Name</label>
@@ -112,30 +97,10 @@ function Registration () {
             <input type="email" className="form-control" aria-describedby="emailHelp"
                     id="email"  value={email}
                     onChange={(event) => setEmail(event.target.value)}/>
-            <div id="emailHelp" className="form-text">We'll never share your email with anyone else.</div>
-        </div>
-        <div className="mb-3">
-            <label className="form-label">Password</label>
-            <input type="password" className="form-control" 
-                  id="password" value={password}
-                  onChange={(event) => setPassword(event.target.value)}/>
-        </div>
-        <div className="mb-3">
-            <label className="form-label">Repeat password</label>
-            <input type="password" className="form-control" 
-                  id="password1" value={password1}
-                  onChange={(event) => setPassword1(event.target.value)}/>
-        </div>
-        <div className="mb-3">
-            <label className="form-label">Select user type</label>
-            <select id="role" className="form-select" value={userType} onChange={(e) => handleCertificateTypeChange(e)} required>
-                <option value="Guest">Guest</option>
-                <option value="Host">Host</option>
-            </select>
         </div>
         <button type="submit" className="btn btn-primary">Confirm</button>
     </form>
   );
 };
 
-export default Registration;
+export default UpdateUser;

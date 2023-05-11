@@ -6,6 +6,7 @@ import CreateAccommodation from "./pages/CreateAccomodation";
 import { Login } from "./pages/Login";
 import Registration from "./pages/Registration";
 import ChangePassword from "./pages/ChangePassword";
+import UpdateUser from "./pages/UpdateUser";
 
 
 
@@ -25,6 +26,7 @@ function App(){
           <Route path="/login" element={<Login/>} />
           <Route path="/registration" element={<Registration/>} />
           <Route path="/changePassword" element={<ChangePassword/>} />
+          <Route path="/updateUser" element={<UpdateUser/>} />
         </Routes>
       </div>
     </>

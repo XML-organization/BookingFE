@@ -1,6 +1,5 @@
 import React, { SyntheticEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { RequestMessage } from "../model/ResponseMessage";
 import { LoginResponse } from "../model/User";
 import { useLoggedUser } from "../hooks/UseLoggedUserInformation";
 
@@ -91,7 +90,7 @@ export function Login() {
           <div className="mb-3">
               <label className="form-label">Password </label>
               <input  className="form-control" 
-                      type={password}
+                      type="password"
                       id="destination" value={password}
                       onChange={(event) => setPassword(event.target.value)}/>
               {passwordError && <div className="text-danger">{passwordError}</div>}
