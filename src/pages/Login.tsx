@@ -60,11 +60,18 @@ export function Login() {
       .then(data => {
 
         loginResponse = data
-        alert(loginResponse.message)
-
-        if(loginResponse.message === "Login successful!"){ 
+        if(loginResponse.message === "User not found!"){
+          setEmailError("User not found")
+        }else if(loginResponse.message === "Password is incorrect!"){
+          setPasswordError("Password is incorrect")
+        }else if(loginResponse.message === "Some error ocurred, please try again!"){
+          setPasswordError("Some error ocurred, please try again")
+        }else if(loginResponse.message === "Login successful!"){
           localStorage.setItem('loggedUser', JSON.stringify(loginResponse));
+          navigate("/")
         }
+
+        
     })
 
   };
