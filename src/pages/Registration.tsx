@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { UserType } from "../model/User";
 import { ResponseMessage } from "../model/ResponseMessage";
+import { useNavigate } from "react-router-dom";
 
 
 interface RegistrationProps {
@@ -34,6 +35,7 @@ function Registration () {
   const [streetError, setStreetError] = useState("");
   const [numberError, setNumberError] = useState("");
   
+  const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); 
@@ -102,6 +104,7 @@ function Registration () {
 
     if(password != password1){
       alert("Password do not match!")
+      return
     }
   
     fetch("http://localhost:8000/autentification/registration", {
@@ -124,6 +127,14 @@ function Registration () {
     }).then(response => response.json())
       .then(data => {
         var message: ResponseMessage = data
+
+        if(message.message === "Registration successful!"){
+          navigate("/login")
+          
+        }else if(message.message === "User already exist!"){
+          setEmailError("User already exist")
+          return
+        }
 
         alert(message.message)
       })

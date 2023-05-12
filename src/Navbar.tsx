@@ -48,6 +48,10 @@ function Navbar() {
         <li className="nav-item active">
           <Link className="nav-link" to="/updateUser">Edit profile</Link>
         </li>)}
+        {loggedUser != null && (
+        <li className="nav-item active">
+          <Link className="nav-link" to="/ChangePassword">Change password</Link>
+        </li>)}
       </ul>
       <ul className="navbar-nav mr-auto" style={stylesRight}>
         <li className="nav-item active" >
