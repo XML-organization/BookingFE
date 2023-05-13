@@ -8,6 +8,7 @@ import { Login } from "./pages/Login";
 import Registration from "./pages/Registration";
 import ChangePassword from "./pages/ChangePassword";
 import UpdateUser from "./pages/UpdateUser";
+import ViewBookingRequests from "./pages/ViewBookingRequests";
 
 
 
@@ -23,6 +24,7 @@ function App(){
       <div>
         <Routes>
           <Route path="/" element={<Home/>} />
+          <Route path="/viewBookings" element={<ViewBookingRequests/>} />
           <Route path="/createAccomodation" element={<CreateAccommodation/>} />
           <Route path="/availability" element={<AccommodationAvailability/>} />
           <Route path="/login" element={<Login/>} />
