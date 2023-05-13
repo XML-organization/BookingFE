@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
+
 import { useParams } from 'react-router-dom';
 
 interface Slot {
@@ -195,11 +196,7 @@ function AccommodationAvailability() {
     </div>
   );
   
-  
-  
-  
-  
-  
+
 }
 
 export default AccommodationAvailability;
