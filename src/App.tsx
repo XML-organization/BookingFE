@@ -9,8 +9,7 @@ import Registration from "./pages/Registration";
 import ChangePassword from "./pages/ChangePassword";
 import UpdateUser from "./pages/UpdateUser";
 import ViewBookingRequests from "./pages/ViewBookingRequests";
-
-
+import AccommodationsPage from "./pages/ViewAccomodations";
 
 
 function App(){
@@ -27,6 +26,8 @@ function App(){
           <Route path="/viewBookings" element={<ViewBookingRequests/>} />
           <Route path="/createAccomodation" element={<CreateAccommodation/>} />
           <Route path="/availability" element={<AccommodationAvailability/>} />
+          <Route path="/viewAccomodation" element={<AccommodationsPage/>} />
+          <Route path="/availability/:accommodationId" element={<AccommodationAvailability />} />
           <Route path="/login" element={<Login/>} />
           <Route path="/registration" element={<Registration/>} />
           <Route path="/changePassword" element={<ChangePassword/>} />
