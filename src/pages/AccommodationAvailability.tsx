@@ -1,58 +1,55 @@
 import React, { useState, useEffect } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
+import { useParams } from 'react-router-dom';
 
 interface Slot {
-  date_from: string;
-  date_to: string;
+  startDate: string;
+  endDate: string;
   price: number;
 }
 
 interface Reservation {
-  date_from: string;
-  date_to: string;
+  startDate: string;
+  endDate: string;
 }
 
 function AccommodationAvailability() {
+   const { accommodationId } = useParams<{ accommodationId: string }>();
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [availability, setAvailability] = useState<Slot[]>([]);
   const [reservations, setReservations] = useState<Reservation[]>([]);
-  const [newSlot, setNewSlot] = useState<Slot>({ date_from: '', date_to: '', price: 0 });
+  const [newSlot, setNewSlot] = useState<Slot>({ startDate: '', endDate: '', price: 0 });
 
   useEffect(() => {
     async function fetchAvailability() {
-      const slots: Slot[] = [
+            const reservations: Reservation[] = [
         {
-          date_from: '2023-05-01',
-          date_to: '2023-05-10',
-          price: 200,
+          startDate: '2023-05-01',
+          endDate: '2023-05-04',
         },
         {
-          date_from: '2023-05-08',
-          date_to: '2023-05-14',
-          price: 250,
-        },
-        {
-          date_from: '2023-05-15',
-          date_to: '2023-05-21',
-          price: 300,
+          startDate: '2023-05-09',
+          endDate: '2023-05-14',
         },
       ];
-  
-      const reservations: Reservation[] = [
-        {
-          date_from: '2023-05-01',
-          date_to: '2023-05-04',
-        },
-        {
-          date_from: '2023-05-09',
-          date_to: '2023-05-14',
-        },
-      ];
-  
-      setAvailability(slots);
       setReservations(reservations);
     }
+
+    fetch(`http://localhost:8000/accomodation/availability/` + accommodationId, {
+      method: "GET",
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data); 
+        // Conversion of prices to numeric format
+        const availabilities = data.availabilities.map((availability: Slot) => ({
+          ...availability,
+          price: Number(availability.price),
+        }));
+        setAvailability(availabilities);
+      })
+      .catch(error => console.log(error));
   
     fetchAvailability();
   }, []);
@@ -61,10 +58,10 @@ function AccommodationAvailability() {
   function tileContent({ date }: { date: Date }) {      
     const dateString = date.toISOString().substring(0, 10);
     const slot = availability.find((slot) => {  
-      return slot.date_from <= dateString && slot.date_to > dateString;
+      return slot.startDate <= dateString && slot.endDate > dateString;
     });
     const reservation = reservations.find((reservation) => {
-      return reservation.date_from <= dateString && reservation.date_to > dateString;
+      return reservation.startDate <= dateString && reservation.endDate > dateString;
     });
     
     if (slot) {
@@ -84,71 +81,56 @@ function AccommodationAvailability() {
   }
 
   function handleAddSlot() {
-    if (newSlot.date_from >= newSlot.date_to) {
+    if (newSlot.startDate >= newSlot.endDate) {
       alert('Invalid date range. "From" date should be before "To" date.');
-      setNewSlot({ date_from: '', date_to: '', price: 0 });
+      setNewSlot({ startDate: '', endDate: '', price: 0 });
       return;
     }
     
-    const overlappingSlots = availability.filter((slot) => {
+    const overlappingReservations = reservations.filter((reservation) => {
       return (
-        (slot.date_from <= newSlot.date_from && newSlot.date_from < slot.date_to) ||
-        (newSlot.date_from <= slot.date_from && slot.date_from < newSlot.date_to)
+        (reservation.startDate <= newSlot.startDate && newSlot.startDate < reservation.endDate) ||
+        (newSlot.startDate <= reservation.startDate && reservation.startDate < newSlot.endDate)
       );
     });
   
-    if (overlappingSlots.length > 0) {
-      // Postoje preklapajući slotovi
-      const updatedAvailability = availability.map((slot) => {
-        const isOverlapping = overlappingSlots.some((overlappingSlot) => {
-          return slot.date_from === overlappingSlot.date_from && slot.date_to === overlappingSlot.date_to;
-        });
-  
-        if (isOverlapping) {
-          // Ažuriramo cenu samo na preklapajućim slotovima koji nisu rezervisani
-          const isReserved = reservations.some((reservation) => {
-            return (
-              (reservation.date_from <= slot.date_from && slot.date_from < reservation.date_to) ||
-              (slot.date_from <= reservation.date_from && reservation.date_from < slot.date_to)
-            );
-          });
-  
-          if (!isReserved) {
-            return { ...slot, price: newSlot.price };
-          } else {
-            alert('Accommodation is already reserved. Cannot change the price.');
-          }
-        }
-  
-        return slot;
-      });
-  
-      setAvailability(updatedAvailability);
-      setNewSlot({ date_from: '', date_to: '', price: 0 });
-    } else {
-      // Nema preklapajućih slotova, dodajemo novi slot
-      fetch('http://localhost:8000/accomodation/addSlot', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newSlot),
-      })
-        .then((response) => {
-          if (response.ok) {
-            alert('The accommodation price has been changed.');
-            setAvailability([...availability, newSlot]);
-            setNewSlot({ date_from: '', date_to: '', price: 0 });
-          } else {
-            alert('Error occurred while adding a new slot.');
-          }
-        })
-        .catch((error) => {
-          alert('Error occurred while adding a new slot.');
-          console.error(error);
-        });
+    if (overlappingReservations.length > 0) {
+      alert('There are overlapping reservations. Cannot add the new slot.');
+      return;
     }
+  
+    const data = {
+      startDate: newSlot.startDate,
+      endDate: newSlot.endDate,
+      price: newSlot.price.toString(),
+      accomodationId: accommodationId,
+    };
+  
+    // No overlapping reservations, add a new slot
+    fetch('http://localhost:8000/accomodation/addAvailability/' + accommodationId, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => {
+        if (response.status === 200 || response.status === 201) {
+          alert('The accommodation price has been changed.');
+          setAvailability([...availability, { ...newSlot }]);
+          setNewSlot({ startDate: '', endDate: '', price: 0 });
+          window.location.reload()
+        } else {
+          alert('Error occurred while adding a new slot.');
+        }
+      })
+      .catch((error) => {
+        alert('Error occurred while adding a new slot.');
+        console.error(error);
+      });
   }
+  
+  
   
   
   
@@ -166,8 +148,8 @@ function AccommodationAvailability() {
               className="form-control"
               type="date"
               placeholder="From"
-              value={newSlot.date_from}
-              onChange={(e) => setNewSlot({ ...newSlot, date_from: e.target.value })}
+              value={newSlot.startDate}
+              onChange={(e) => setNewSlot({ ...newSlot, startDate: e.target.value })}
             />
           </div>
           <div className="mb-3">
@@ -175,8 +157,8 @@ function AccommodationAvailability() {
               className="form-control"
               type="date"
               placeholder="To"
-              value={newSlot.date_to}
-              onChange={(e) => setNewSlot({ ...newSlot, date_to: e.target.value })}
+              value={newSlot.endDate}
+              onChange={(e) => setNewSlot({ ...newSlot, endDate: e.target.value })}
             />
           </div>
           <div className="mb-3">
