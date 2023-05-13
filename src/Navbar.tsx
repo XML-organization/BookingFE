@@ -1,5 +1,6 @@
 import { Link, useNavigate  } from 'react-router-dom';
 import { useLoggedUser } from "./hooks/UseLoggedUserInformation";
+import { UserType } from './model/User';
   
 
 function Navbar() {
@@ -52,7 +53,17 @@ function Navbar() {
         <li className="nav-item active">
           <Link className="nav-link" to="/ChangePassword">Change password</Link>
         </li>)}
+        {loggedUser?.role.toString() == "HOST" && (
+        <li className="nav-item active">
+          <Link className="nav-link" to="/createAccomodation">Create Accommodation</Link>
+        </li>)}
+        {loggedUser?.role.toString() == "HOST"  && (
+        <li className="nav-item active">
+          <Link className="nav-link" to="/viewAccomodation">View Accommodations</Link>
+        </li>)}
+
       </ul>
+      
       <ul className="navbar-nav mr-auto" style={stylesRight}>
         <li className="nav-item active" >
           {loggedUser == null ? (
