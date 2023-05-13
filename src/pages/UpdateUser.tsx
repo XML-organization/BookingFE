@@ -92,7 +92,6 @@ function UpdateUser () {
     }).then(response => response.json())
       .then(data => {
         var message: ResponseMessage = data
-
         alert(message.message)
       })
   };
