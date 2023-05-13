@@ -90,7 +90,7 @@ function AccommodationsPage() {
                   variant="primary"
                   onClick={() => handleCreateSlot(accommodation.id)}
                 >
-                  Create Slot
+                  Availability
                 </Button>             
                  </Card.Body>
             </Card>
