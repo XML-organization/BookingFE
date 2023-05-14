@@ -1,9 +1,13 @@
 import { ChangeEvent, useState } from 'react';
-import {Routes, Route, useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import  { Accomodation } from '../model/Accomodation';
+import { AccommodationDTO } from '../model/AccommodationDTO';
+import { useLoggedUser } from '../hooks/UseLoggedUserInformation';
+import { v4 as uuidv4 } from 'uuid';
 
 let noResults = false;
-let clicked = true;
+let clicked = false;
+var userInformation = useLoggedUser()
 
 function Home(){
     const navigate = useNavigate();
@@ -13,7 +17,7 @@ function Home(){
     const [endDate, setEndDate] = useState("");
     const [numOfGuests, setNumOfGuests] = useState("");
 
-    const [accomodations, setAccomodations] = useState<Accomodation[]>([]);
+    const [accomodations, setAccomodations] = useState<AccommodationDTO[]>([]);
   
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
@@ -31,23 +35,33 @@ function Home(){
         }
       };
 
-      const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        //e.preventDefault();
-        /*const url =
-          "http://localhost:8082//booking/create?" +
-          new URLSearchParams({
-            destination,
-            departure,
-            date,
-            capacity,
+      const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e?.preventDefault();
+        fetch("http://localhost:8000/accomodation/search", {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            "location": city,
+            "startDate": startDate,
+            "endDate": endDate,
+            "numOfGuests": numOfGuests
+          }),
+          }).then(res => res.json())
+          .then((data) => {
+            console.log("Fetched data:", data);
+            setAccomodations(data.accommodationsDTO);
+            console.log("Updated bookings:", accomodations);
+            clicked = true;
+          })
+          .catch((error) => {
+            console.error("Fetch error:", error);
           });
-        fetch(url)
-          .then((response) => response.json())
-          .then((data) => setFlights(data));*/
-          clicked = true;
       };
 
-      if (accomodations.length === 0){
+      if (accomodations?.length === 0){
         noResults = true;
       }else{
         noResults = false;
@@ -56,6 +70,37 @@ function Home(){
     function hendleMakeReservation(): void {
         throw new Error('Function not implemented.');
     }
+
+    const book = async (accommodation: AccommodationDTO, e?: React.FormEvent<HTMLFormElement>) => {
+      e?.preventDefault();
+      fetch("http://localhost:8000/booking/create", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          "id": generateUUID(),
+          "accomodationID": accommodation.id,
+          "userID": userInformation?.id,
+          "startDate": startDate,
+          "endDate": endDate,
+          "guestNumber": numOfGuests,
+          "status": "1"
+        }),
+        }).then((response) => {
+          if (response.status === 200) {
+          window.alert("Booking confirmed");
+          } else {
+          window.alert("Failed to confirm booking");
+          }
+          });
+    };
+
+    const generateUUID = (): string => {
+      const uuid = uuidv4();
+      return uuid;
+    };
 
     return (
        <div>
@@ -68,7 +113,7 @@ function Home(){
             <table className="table table-striped" style={{width: '110%', marginLeft : "auto", marginRight: "auto"}}>
                     <tr>
                         <th className="th-lg-percent">
-                        <label className="form-label">City </label>
+                        <label className="form-label">Location </label>
                         </th>
                         <th>&nbsp;&nbsp;</th>
                         <th className="th-lg-percent">
@@ -118,7 +163,6 @@ function Home(){
             {noResults && clicked && <div style={{ color: 'blue' }} >There are no accomodations for given inputs!</div>}
 
             {clicked && <div >
-                <table className="table table-striped">
                     <table className="table table-striped" style={{width: '100%', alignItems:"center", marginLeft : "auto", marginRight:  "auto"}}>
                         <thead className="thead-dark">
                             <tr>
@@ -136,6 +180,7 @@ function Home(){
                         <tbody>
                             {accomodations.map((accomodation, index) => (
                             <tr key={accomodation.name}>
+                                <td>{accomodation.name}</td>
                                 <td>{accomodation.location}</td>
                                 <td>{accomodation.wifi}</td>
                                 <td>{accomodation.kitchen}</td>
@@ -143,18 +188,17 @@ function Home(){
                                 <td>{accomodation.freeParking}</td>
                                 <td>{accomodation.price}</td>
                                 <td>{accomodation.totalPrice}</td>
-                                <td><button type="submit" className="btn btn-primary" onClick={() => hendleMakeReservation()}>RESERVE</button></td>
+                                <td>
+                                  {userInformation?.role.toString() == "GUEST" && (<button type="submit" className="btn btn-primary" onClick={() => book(accomodation)}>
+                                    Book
+                                  </button>)}
+                                </td>
                             </tr>
                             ))}
                         </tbody>
                     </table>
-                </table>
             </div>}
        </div>
-
-       
-
-    )
-  }
+    )}
   
   export default Home;
