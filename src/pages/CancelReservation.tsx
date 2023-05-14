@@ -25,7 +25,7 @@ const [isLoading, setIsLoading] = useState(true);
 
   const onRender = async (e?: React.FormEvent<HTMLFormElement>) => {
       e?.preventDefault();
-      const response = await fetch("http://localhost:8000/booking/getAllReservation?userId="+ user, {
+      const response = await fetch("http://localhost:8000/booking/GetUserReservations?userId="+ user, {
           method: "GET",
           headers: {
             "Content-type": "application/json",
