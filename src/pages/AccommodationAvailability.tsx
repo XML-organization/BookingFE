@@ -3,6 +3,7 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 
 import { useParams } from 'react-router-dom';
+import { Booking } from '../model/Booking';
 
 interface Slot {
   startDate: string;
@@ -19,23 +20,19 @@ function AccommodationAvailability() {
    const { accommodationId } = useParams<{ accommodationId: string }>();
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [availability, setAvailability] = useState<Slot[]>([]);
-  const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
   const [newSlot, setNewSlot] = useState<Slot>({ startDate: '', endDate: '', price: 0 });
 
   useEffect(() => {
-    async function fetchAvailability() {
-            const reservations: Reservation[] = [
-        {
-          startDate: '2023-05-01',
-          endDate: '2023-05-04',
-        },
-        {
-          startDate: '2023-05-09',
-          endDate: '2023-05-14',
-        },
-      ];
-      setReservations(reservations);
-    }
+    fetch(`http://localhost:8000/booking/reservation/` + accommodationId, {
+      method: "GET",
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data); 
+        setBookings(data.reservations);
+      })
+      .catch(error => console.log(error));
 
     fetch(`http://localhost:8000/accomodation/availability/` + accommodationId, {
       method: "GET",
@@ -52,7 +49,6 @@ function AccommodationAvailability() {
       })
       .catch(error => console.log(error));
   
-    fetchAvailability();
   }, []);
 
  
@@ -61,7 +57,7 @@ function AccommodationAvailability() {
     const slot = availability.find((slot) => {  
       return slot.startDate <= dateString && slot.endDate > dateString;
     });
-    const reservation = reservations.find((reservation) => {
+    const reservation = bookings.find((reservation) => {
       return reservation.startDate <= dateString && reservation.endDate > dateString;
     });
     
@@ -88,7 +84,7 @@ function AccommodationAvailability() {
       return;
     }
     
-    const overlappingReservations = reservations.filter((reservation) => {
+    const overlappingReservations = bookings.filter((reservation) => {
       return (
         (reservation.startDate <= newSlot.startDate && newSlot.startDate < reservation.endDate) ||
         (newSlot.startDate <= reservation.startDate && reservation.startDate < newSlot.endDate)

@@ -9,7 +9,7 @@ let noResults = false;
 let clicked = true;
 
 const loggedUser = useLoggedUser();
-let user : string = loggedUser?.id!;
+let user : string = loggedUser?.email!;
 let userProfile : UserType = loggedUser?.role!;
 
 function DeleteUser(){
@@ -95,13 +95,14 @@ const [isLoading, setIsLoading] = useState(true);
 
 const cancel = async (userId: string, e?: React.FormEvent<HTMLFormElement>) => {
       e?.preventDefault();
-  fetch("http://localhost:8000/user/deleteUser?id="+ userId, {
-    method: "POST",
+      const loggedUser = useLoggedUser();
+      console.log(loggedUser?.email)
+  fetch("http://localhost:8000/user/deleteUser/"+ loggedUser?.email, {
+    method: "DELETE",
     headers: {
       Accept: "application/json",
     },
     credentials: "include",
-    body: JSON.stringify(userId),
     }).then((response) => {
       if(userProfile == UserType.Host){
         if(accommodations.length == 0){
