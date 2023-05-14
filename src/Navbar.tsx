@@ -53,6 +53,14 @@ function Navbar() {
         <li className="nav-item active">
           <Link className="nav-link" to="/ChangePassword">Change password</Link>
         </li>)}
+        {loggedUser == null && (
+        <li className="nav-item active">
+          <Link className="nav-link" to="/cancelReservation">Cancel reservation</Link>
+        </li>)}
+        {loggedUser == null && (
+        <li className="nav-item active">
+          <Link className="nav-link" to="/delete">Delete</Link>
+        </li>)}
         {loggedUser?.role.toString() == "HOST" && (
         <li className="nav-item active">
           <Link className="nav-link" to="/createAccomodation">Create Accommodation</Link>

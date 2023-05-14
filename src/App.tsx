@@ -10,6 +10,8 @@ import ChangePassword from "./pages/ChangePassword";
 import UpdateUser from "./pages/UpdateUser";
 import ViewBookingRequests from "./pages/ViewBookingRequests";
 import AccommodationsPage from "./pages/ViewAccomodations";
+import CancelReservationPage from "./pages/CancelReservation";
+import DeleteUser from "./pages/DeleteUser";
 
 
 function App(){
@@ -32,6 +34,8 @@ function App(){
           <Route path="/registration" element={<Registration/>} />
           <Route path="/changePassword" element={<ChangePassword/>} />
           <Route path="/updateUser" element={<UpdateUser/>} />
+          <Route path="/cancelReservation" element={<CancelReservationPage/>} />
+          <Route path="/delete" element={<DeleteUser/>} />
         </Routes>
       </div>
     </>

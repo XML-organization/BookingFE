@@ -1,6 +1,4 @@
 import { useState } from "react";
-import Select from 'react-select';
-import { UserType } from "../model/User";
 import { useLoggedUser } from "../hooks/UseLoggedUserInformation";
 import { ResponseMessage } from "../model/ResponseMessage";
 
