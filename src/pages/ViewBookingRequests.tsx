@@ -21,7 +21,7 @@ function ViewBookingRequests(){
 
     const onRender = async (e?: React.FormEvent<HTMLFormElement>) => {
         e?.preventDefault();
-        const response = await fetch("http://localhost:8000/booking/getAllPending/2b17e42e-9e4e-4b68-9baf-8a4e86282d47", {
+        const response = await fetch("http://localhost:8000/booking/getAllPending/" + userInformation?.id, {
             method: "GET",
             headers: {
               "Content-type": "application/json",
