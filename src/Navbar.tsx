@@ -61,6 +61,10 @@ function Navbar() {
         <li className="nav-item active">
           <Link className="nav-link" to="/viewAccomodation">View Accommodations</Link>
         </li>)}
+        {loggedUser?.role.toString() == "HOST"  && (
+        <li className="nav-item active">
+          <Link className="nav-link" to="/viewBookings">View Booking Requests</Link>
+        </li>)}
 
       </ul>
       
