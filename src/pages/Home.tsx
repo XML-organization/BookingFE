@@ -172,7 +172,7 @@ function Home(){
                             <th scope="col">Kitchen</th>
                             <th scope="col">AirCondition</th>
                             <th scope="col">FreeParking</th>
-                            <th scope="col">Price for a night</th>
+                            <th scope="col">Price for a guest</th>
                             <th scope="col">Total price</th>
                             <th scope="col"></th>
                             </tr>
@@ -182,11 +182,11 @@ function Home(){
                             <tr key={accomodation.name}>
                                 <td>{accomodation.name}</td>
                                 <td>{accomodation.location}</td>
-                                <td>{accomodation.wifi}</td>
-                                <td>{accomodation.kitchen}</td>
-                                <td>{accomodation.airCondition}</td>
-                                <td>{accomodation.freeParking}</td>
-                                <td>{accomodation.price}</td>
+                                <td>{accomodation.wifi.toString()}</td>
+                                <td>{accomodation.kitchen.toString()}</td>
+                                <td>{accomodation.airCondition.toString()}</td>
+                                <td>{accomodation.freeParking.toString()}</td>
+                                <td>{accomodation.pricePerGuest.toString()}</td>
                                 <td>{accomodation.totalPrice}</td>
                                 <td>
                                   {userInformation?.role.toString() == "GUEST" && (<button type="submit" className="btn btn-primary" onClick={() => book(accomodation)}>

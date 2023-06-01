@@ -25,7 +25,7 @@ const [isLoading, setIsLoading] = useState(true);
 
   const onRender = async (e?: React.FormEvent<HTMLFormElement>) => {
       e?.preventDefault();
-      const response = await fetch("http://localhost:8000/booking/GetUserReservations?userId="+ user, {
+      const response = await fetch("http://localhost:8000/booking/GetUserReservations/"+ user, {
           method: "GET",
           headers: {
             "Content-type": "application/json",
@@ -35,7 +35,7 @@ const [isLoading, setIsLoading] = useState(true);
     .then(res => res.json())
         .then((data) => {
           console.log("Fetched data:", data);
-          setBookings(data.bookings);
+          setBookings(data.reservations);
           console.log("View bookings:", bookings);
     setIsLoading(false);
         })
@@ -46,16 +46,16 @@ const [isLoading, setIsLoading] = useState(true);
 
 const cancel = async (bookingId: string, e?: React.FormEvent<HTMLFormElement>) => {
       e?.preventDefault();
-  fetch("http://localhost:8000/booking/canceledBooking?bookigId="+bookingId, {
-    method: "POST",
+  fetch("http://localhost:8000/booking/canceledBooking/"+bookingId, {
+    method: "PUT",
     headers: {
       Accept: "application/json",
     },
     credentials: "include",
-    body: JSON.stringify(bookingId),
     }).then((response) => {
       if (response.status === 200) {
       window.alert("Booking canceled");
+      window.location.reload()
       navigate("/cancelReservation");
       } else {
       window.alert("Failed to canceled booking");
@@ -92,8 +92,6 @@ const cancel = async (bookingId: string, e?: React.FormEvent<HTMLFormElement>) =
         <table className="table table-striped" style={{width: '100%', alignItems:"center", marginLeft : "auto", marginRight:  "auto"}}>
                        <thead className="thead-dark">
                            <tr>
-                           <th scope="col">Booking ID</th>
-             <th scope="col">Accomodation ID</th>
                            <th scope="col">Start date</th>
                            <th scope="col">End date</th>
                            <th scope="col">Number of guests</th>
@@ -105,8 +103,6 @@ const cancel = async (bookingId: string, e?: React.FormEvent<HTMLFormElement>) =
                        <tbody>
            {bookings.map((booking, index) => (
             <tr key={booking.id}>
-              <td>{booking.id}</td>
-              <td>{booking.accomodationID}</td>
               <td>{booking.startDate}</td>
               <td>{booking.endDate}</td>
               <td>{booking.guestNumber}</td>

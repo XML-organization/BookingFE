@@ -14,6 +14,7 @@ interface Slot {
 interface Reservation {
   startDate: string;
   endDate: string;
+  status: string;
 }
 
 function AccommodationAvailability() {
@@ -58,7 +59,7 @@ function AccommodationAvailability() {
       return slot.startDate <= dateString && slot.endDate > dateString;
     });
     const reservation = bookings.find((reservation) => {
-      return reservation.startDate <= dateString && reservation.endDate > dateString;
+      return reservation.startDate <= dateString && reservation.endDate > dateString && reservation.status=="CONFIRMED";
     });
     
     if (slot) {
