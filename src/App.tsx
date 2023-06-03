@@ -11,6 +11,7 @@ import UpdateUser from "./pages/UpdateUser";
 import ViewBookingRequests from "./pages/ViewBookingRequests";
 import AccommodationsPage from "./pages/ViewAccomodations";
 import AccommodationDetailsPage from "./pages/AccommodationDetailsPage";
+import HostRatings from "./pages/HostRatings";
 
 
 function App(){
@@ -34,6 +35,7 @@ function App(){
           <Route path="/changePassword" element={<ChangePassword/>} />
           <Route path="/updateUser" element={<UpdateUser/>} />
           <Route path="/accomodationDetails/:id" element={<AccommodationDetailsPage/>} />
+          <Route path="/hostRatings" element={<HostRatings/>} />
         </Routes>
       </div>
     </>

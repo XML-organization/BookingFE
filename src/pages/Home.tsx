@@ -150,13 +150,13 @@ function Home() {
 
   const handleModalClose = (): void => {
     setShowModal(false);
-    setIsEditing(true)
   };
 
   const handleModalSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     
-    fetch("http://localhost:8000/rating/create", {
+    if(!isEditing){
+      fetch("http://localhost:8000/rating/create", {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -170,17 +170,36 @@ function Home() {
         raterSurname: loggedUser?.surname,
         userId: currentAccomodationHostId
       }),
-    }).then((response) => {
-      if (response.status === 200) {
-        window.alert("Successfully");
-      } else {
-        window.alert("Some error occured, please try again");
-      }
-    });
-
-    console.log("Rating:", rating);
-    console.log("Comment:", comment);
-    setShowModal(false);
+      }).then((response) => {
+        if (response.status === 200) {
+          window.alert("Successfully");
+        } else {
+          window.alert("Some error occured, please try again");
+        }
+      });
+      setShowModal(false);
+    }else{
+      fetch("http://localhost:8000/rating/update", {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        rating: rating,
+        hostId: currentAccomodationHostId,
+        guestId: loggedUser?.id,
+      }),
+      }).then((response) => {
+        if (response.status === 200) {
+          window.alert("Successfully");
+        } else {
+          window.alert("Some error occured, please try again");
+        }
+      });
+      setShowModal(false);
+      setIsEditing(false)
+    }
   };
 
   const handleDeleteRating = async () => {
@@ -204,6 +223,7 @@ function Home() {
   
   const handleEditRating = () => {
     setWasRated(false)
+    setIsEditing(true)
   };
 
   return (
