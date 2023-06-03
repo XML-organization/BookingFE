@@ -8,8 +8,9 @@ export class AccommodationDTO {
     freeParking: boolean=false;
     price: string='';
     totalPrice: string='';
+    idHost: string = '';
   
-    constructor(id:string, name: string, location: string, wifi: boolean, kitchen: boolean, airCondition: boolean, freeParking: boolean, price: string, totalPrice:string) {
+    constructor(idHost:string, id:string, name: string, location: string, wifi: boolean, kitchen: boolean, airCondition: boolean, freeParking: boolean, price: string, totalPrice:string) {
       this.id = id;
       this.name = name;
       this.wifi = wifi;
@@ -18,5 +19,6 @@ export class AccommodationDTO {
       this.freeParking = freeParking;
       this.price = price;
       this.totalPrice = totalPrice;
+      this.idHost = idHost;
     }
   }

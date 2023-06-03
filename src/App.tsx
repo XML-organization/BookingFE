@@ -10,6 +10,7 @@ import ChangePassword from "./pages/ChangePassword";
 import UpdateUser from "./pages/UpdateUser";
 import ViewBookingRequests from "./pages/ViewBookingRequests";
 import AccommodationsPage from "./pages/ViewAccomodations";
+import AccommodationDetailsPage from "./pages/AccommodationDetailsPage";
 
 
 function App(){
@@ -32,6 +33,7 @@ function App(){
           <Route path="/registration" element={<Registration/>} />
           <Route path="/changePassword" element={<ChangePassword/>} />
           <Route path="/updateUser" element={<UpdateUser/>} />
+          <Route path="/accomodationDetails/:id" element={<AccommodationDetailsPage/>} />
         </Routes>
       </div>
     </>
