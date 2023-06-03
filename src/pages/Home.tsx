@@ -114,6 +114,7 @@ function Home() {
           "guestId": loggedUser?.id
         }),
       });
+
   
       const data = await response.json();
   
@@ -306,7 +307,7 @@ function Home() {
                   <td>{accomodation.kitchen ? "Yes" : "No"}</td>
                   <td>{accomodation.airCondition ? "Yes" : "No"}</td>
                   <td>{accomodation.freeParking ? "Yes" : "No"}</td>
-                  <td>{accomodation.price ? "Yes" : "No"}</td>
+                  <td>{accomodation.pricePerGuest ? "Yes" : "No"}</td>
                   <td>{accomodation.totalPrice}</td>
                   <td>
                     <button

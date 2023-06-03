@@ -12,6 +12,8 @@ import ViewBookingRequests from "./pages/ViewBookingRequests";
 import AccommodationsPage from "./pages/ViewAccomodations";
 import AccommodationDetailsPage from "./pages/AccommodationDetailsPage";
 import HostRatings from "./pages/HostRatings";
+import CancelReservationPage from "./pages/CancelReservation";
+import DeleteUser from "./pages/DeleteUser";
 
 
 function App(){
@@ -36,6 +38,8 @@ function App(){
           <Route path="/updateUser" element={<UpdateUser/>} />
           <Route path="/accomodationDetails/:id" element={<AccommodationDetailsPage/>} />
           <Route path="/hostRatings" element={<HostRatings/>} />
+          <Route path="/cancelReservation" element={<CancelReservationPage/>} />
+          <Route path="/delete" element={<DeleteUser/>} />
         </Routes>
       </div>
     </>
