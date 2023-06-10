@@ -26,6 +26,13 @@ function Home() {
   const [wasRated, setWasRated] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
 
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(0);
+  const [wifiChecked, setWifiChecked] = useState(false);
+  const [kitchenChecked, setKitchenChecked] = useState(false);
+  const [airConditionChecked, setAirConditionChecked] = useState(false);
+  const [parkingChecked, setParkingChecked] = useState(false);
+  const [filteredAccommodations, setFilteredAccommodations] = useState<AccommodationDTO[]>([]);
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     if (id === "city") {
@@ -40,6 +47,41 @@ function Home() {
     if (id === "numOfGuests") {
       setNumOfGuests(value);
     }
+  };
+  const handlePriceInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    if (id === "minPrice") {
+      if (value.length!=0) {
+              setMinPrice(parseFloat(value));
+      }  
+    }
+    if (id === "maxPrice") {
+      if (value.length!=0) {
+      setMaxPrice(parseFloat(value));
+      }
+    }
+   
+  };
+
+  const handleCheckboxChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { id, checked } = e.target;
+    if (id === "wifi") {
+      setWifiChecked(checked);
+    }
+    if (id === "kitchen") {
+      setKitchenChecked(checked);
+    }
+    if (id === "airCondition") {
+      setAirConditionChecked(checked);
+    }
+    if (id === "parking") {
+      setParkingChecked(checked);   
+    }
+    
+  };
+  const handleFilterButtonClick = () => {
+    setFilteredAccommodations(accomodations.filter((acc)=> acc.airCondition===airConditionChecked &&  acc.wifi===wifiChecked && acc.freeParking===parkingChecked && acc.kitchen===kitchenChecked && parseFloat(acc.totalPrice)> minPrice && parseFloat(acc.totalPrice)< maxPrice));
+
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -61,6 +103,7 @@ function Home() {
       .then((data) => {
         console.log("Fetched data:", data);
         setAccomodations(data.accommodationsDTO);
+        setFilteredAccommodations(data.accommodationsDTO);
         console.log("Updated accommodations:", accomodations);
         setClicked(true);
         setNoResults(data.accommodationsDTO.length === 0);
@@ -227,6 +270,8 @@ function Home() {
     setIsEditing(true)
   };
 
+
+
   return (
     <div>
       <blockquote className="blockquote text-center">
@@ -284,6 +329,100 @@ function Home() {
 
       {clicked && (
         <div>
+<div className="container">
+  <div className="row">
+    <div className="col">
+    <div className="form-inline d-flex">
+  <label htmlFor="minPrice">Min Price:</label>
+  <input
+    type="number"
+    className="form-control"
+    id="minPrice"
+    value={minPrice}
+    onChange={handlePriceInputChange}
+  />
+</div>
+
+    </div>
+    <div className="col">
+      <div className="form-inline d-flex">
+        <label htmlFor="maxPrice">Max Price:</label>
+        <input
+          type="number"
+          className="form-control"
+          id="maxPrice"
+          value={maxPrice}
+          onChange={handlePriceInputChange}
+        />
+      </div>
+    </div>
+    <div className="col">
+      <div className="form-group form-check">
+        <input
+          type="checkbox"
+          className="form-check-input"
+          id="wifi"
+          checked={wifiChecked}
+          onChange={handleCheckboxChange}
+        />
+        <label className="form-check-label" htmlFor="wifi">
+          Wifi
+        </label>
+      </div>
+    </div>
+    <div className="col">
+      <div className="form-group form-check">
+        <input
+          type="checkbox"
+          className="form-check-input"
+          id="kitchen"
+          checked={kitchenChecked}
+          onChange={handleCheckboxChange}
+        />
+        <label className="form-check-label" htmlFor="kitchen">
+          Kitchen
+        </label>
+      </div>
+    </div>
+    <div className="col">
+      <div className="form-group form-check">
+        <input
+          type="checkbox"
+          className="form-check-input"
+          id="airCondition"
+          checked={airConditionChecked}
+          onChange={handleCheckboxChange}
+        />
+        <label className="form-check-label" htmlFor="airCondition">
+          Air Condition
+        </label>
+      </div>
+    </div>
+    <div className="col">
+      <div className="form-group form-check">
+        <input
+          type="checkbox"
+          className="form-check-input"
+          id="parking"
+          checked={parkingChecked}
+          onChange={handleCheckboxChange}
+        />
+        <label className="form-check-label" htmlFor="parking">
+          Parking
+        </label>
+      </div>
+    </div>
+    <div className="col">
+      <button className="btn btn-primary" onClick={handleFilterButtonClick}>
+        Filtriraj
+      </button>
+    </div>
+  </div>
+</div>
+
+
+
+
           <table className="table table-striped" style={{ width: '100%', alignItems: "center", marginLeft: "auto", marginRight: "auto" }}>
             <thead className="thead-dark">
               <tr>
@@ -299,7 +438,7 @@ function Home() {
               </tr>
             </thead>
             <tbody>
-              {accomodations.map((accomodation, index) => (
+              {filteredAccommodations.map((accomodation, index) => (
                 <tr key={accomodation.name}>
                   <td>{accomodation.name}</td>
                   <td>{accomodation.location}</td>
