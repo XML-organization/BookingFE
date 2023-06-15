@@ -4,6 +4,8 @@ import { AccommodationDTO } from '../model/AccommodationDTO';
 import { useLoggedUser } from '../hooks/UseLoggedUserInformation';
 import { v4 as uuidv4 } from 'uuid';
 import { Link } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 var loggedUser = useLoggedUser();
 
@@ -83,6 +85,23 @@ function Home() {
     setFilteredAccommodations(accomodations.filter((acc)=> acc.airCondition===airConditionChecked &&  acc.wifi===wifiChecked && acc.freeParking===parkingChecked && acc.kitchen===kitchenChecked && parseFloat(acc.totalPrice)> minPrice && parseFloat(acc.totalPrice)< maxPrice));
 
   };
+
+  const handleCheckRateHost = async (idHost: string) => {
+    fetch(`http://localhost:8000/host/isExceptional/` + idHost, {
+      method: "GET",
+    })
+      .then(response => response.json())
+      .then(data => {
+        const isExceptional = JSON.parse(data.isExceptional);
+        if (isExceptional == true){
+          toast.info("Host is exceptional! :)");
+        }else{
+          toast.info("Host is not exceptional! :/");
+        }
+        console.log(data); // Log the entire data object
+      })
+      .catch(error => console.log(error));
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -279,6 +298,8 @@ function Home() {
         <footer className="blockquote-footer">Enter all parameters!</footer>
       </blockquote>
 
+      <ToastContainer />
+
       <form className="col-md-6 mx-auto" onSubmit={handleSubmit}>
         <table className="table table-striped" style={{ width: '110%', marginLeft: "auto", marginRight: "auto" }}>
           <tr>
@@ -327,7 +348,7 @@ function Home() {
 
       {noResults && clicked && <div style={{ color: 'blue' }} >There are no accommodations for the given inputs!</div>}
 
-      {clicked && (
+      {clicked && noResults==false &&(
         <div>
 <div className="container">
   <div className="row">
@@ -414,7 +435,7 @@ function Home() {
     </div>
     <div className="col">
       <button className="btn btn-primary" onClick={handleFilterButtonClick}>
-        Filtriraj
+        Filter
       </button>
     </div>
   </div>
@@ -460,6 +481,12 @@ function Home() {
                       onClick={() => handleRateHost(accomodation)}
                     >
                       Rate Host
+                    </button>
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => handleCheckRateHost(accomodation.idHost)}
+                    >
+                      Check Host Rating
                     </button>
                   </td>
                 </tr>
