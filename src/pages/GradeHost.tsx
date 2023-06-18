@@ -64,13 +64,9 @@ function GradeHost(){
     const uniqueDisplay = Array.from(new Set(display));
     setDisplayAccomodations(uniqueDisplay) // Poziv metode onRender samo pri prvom učitavanju stranice
       setIsLoading(true); // Postavi flag varijablu na true
-    
-
       console.log("=====",displayAccomodations)
     }
   
-    // Opciono: Možete dodati povratnu funkciju (cleanup funkciju) ako je potrebno
-    // Ova funkcija će se izvršiti pri uništavanju komponente
   }, [render]);
 
   
