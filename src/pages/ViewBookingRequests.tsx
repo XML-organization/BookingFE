@@ -1,5 +1,5 @@
 import { ChangeEvent, useEffect, useState } from 'react';
-import {Routes, Route, useNavigate} from 'react-router-dom';
+import {Route, useNavigate} from 'react-router-dom';
 import  { Accomodation } from '../model/Accomodation';
 import { Booking } from '../model/Booking';
 import { useLoggedUser } from '../hooks/UseLoggedUserInformation';
