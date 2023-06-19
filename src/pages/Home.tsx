@@ -34,6 +34,7 @@ function Home() {
   const [kitchenChecked, setKitchenChecked] = useState(false);
   const [airConditionChecked, setAirConditionChecked] = useState(false);
   const [parkingChecked, setParkingChecked] = useState(false);
+  const [isExcChecked, setIsExcChecked] = useState(false);
   const [filteredAccommodations, setFilteredAccommodations] = useState<AccommodationDTO[]>([]);
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -79,10 +80,13 @@ function Home() {
     if (id === "parking") {
       setParkingChecked(checked);   
     }
+    if (id === "isExc") {
+      setIsExcChecked(checked);   
+    }
     
   };
   const handleFilterButtonClick = () => {
-    setFilteredAccommodations(accomodations.filter((acc)=> acc.airCondition===airConditionChecked &&  acc.wifi===wifiChecked && acc.freeParking===parkingChecked && acc.kitchen===kitchenChecked && parseFloat(acc.totalPrice)> minPrice && parseFloat(acc.totalPrice)< maxPrice));
+    setFilteredAccommodations(accomodations.filter((acc)=> acc.airCondition===airConditionChecked &&  acc.wifi===wifiChecked && acc.freeParking===parkingChecked && acc.kitchen===kitchenChecked && acc.isExceptional===isExcChecked && parseFloat(acc.totalPrice)> minPrice && parseFloat(acc.totalPrice)< maxPrice));
 
   };
 
@@ -105,7 +109,7 @@ function Home() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    fetch("http://localhost:8000/accomodation/search", {
+    const response = await fetch("http://localhost:8000/accomodation/search", {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -117,20 +121,46 @@ function Home() {
         endDate: endDate,
         numOfGuests: numOfGuests
       }),
-    })
-      .then(res => res.json())
-      .then((data) => {
-        console.log("Fetched data:", data);
-        setAccomodations(data.accommodationsDTO);
-        setFilteredAccommodations(data.accommodationsDTO);
-        console.log("Updated accommodations:", accomodations);
-        setClicked(true);
-        setNoResults(data.accommodationsDTO.length === 0);
+    });
+  
+    if (!response.ok) {
+      console.error("Fetch error:", response.status);
+      return;
+    }
+  
+    const data = await response.json();
+    console.log("Fetched data:", data);
+    setAccomodations(data.accommodationsDTO);
+    setFilteredAccommodations(data.accommodationsDTO);
+    setClicked(true);
+    setNoResults(data.accommodationsDTO.length === 0);
+  
+    // Fetch additional data for each accommodation
+    const updatedAccommodations = await Promise.all(
+      data.accommodationsDTO.map(async (accommodation:AccommodationDTO) => {
+        const hostResponse = await fetch(`http://localhost:8000/host/isExceptional/`+ accommodation.idHost, {
+          method: "GET",
+        });
+  
+        if (!hostResponse.ok) {
+          console.error("Fetch error:", hostResponse.status);
+          return accommodation; // Return original accommodation if the additional data fetch fails
+        }
+  
+        const hostData = await hostResponse.json();
+        const isExceptional = hostData.isExceptional;
+  
+        return {
+          ...accommodation,
+          isExceptional: isExceptional
+        };
       })
-      .catch((error) => {
-        console.error("Fetch error:", error);
-      });
+    );
+  
+    setAccomodations(updatedAccommodations);
+    setFilteredAccommodations(updatedAccommodations);
   };
+  
 
   const handleMakeReservation = (accommodation: AccommodationDTO): void => {
     fetch("http://localhost:8000/booking/create", {
@@ -434,6 +464,20 @@ function Home() {
       </div>
     </div>
     <div className="col">
+      <div className="form-group form-check">
+        <input
+          type="checkbox"
+          className="form-check-input"
+          id="isExc"
+          checked={isExcChecked}
+          onChange={handleCheckboxChange}
+        />
+        <label className="form-check-label" htmlFor="isExc">
+        Exceptional
+        </label>
+      </div>
+    </div>
+    <div className="col">
       <button className="btn btn-primary" onClick={handleFilterButtonClick}>
         Filter
       </button>
@@ -453,6 +497,7 @@ function Home() {
                 <th scope="col">Kitchen</th>
                 <th scope="col">AirCondition</th>
                 <th scope="col">FreeParking</th>
+                <th scope="col">Exceptional host</th>
                 <th scope="col">Price for a night</th>
                 <th scope="col">Total price</th>
                 <th scope="col"></th>
@@ -467,6 +512,7 @@ function Home() {
                   <td>{accomodation.kitchen ? "Yes" : "No"}</td>
                   <td>{accomodation.airCondition ? "Yes" : "No"}</td>
                   <td>{accomodation.freeParking ? "Yes" : "No"}</td>
+                  <td>{accomodation.isExceptional ? "Yes" : "No"}</td>
                   <td>{accomodation.pricePerGuest ? "Yes" : "No"}</td>
                   <td>{accomodation.totalPrice}</td>
                   <td>
