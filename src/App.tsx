@@ -14,6 +14,7 @@ import AccommodationDetailsPage from "./pages/AccommodationDetailsPage";
 import HostRatings from "./pages/HostRatings";
 import CancelReservationPage from "./pages/CancelReservation";
 import DeleteUser from "./pages/DeleteUser";
+import Notifications from "./pages/Notifications";
 
 
 function App(){
@@ -40,6 +41,7 @@ function App(){
           <Route path="/hostRatings" element={<HostRatings/>} />
           <Route path="/cancelReservation" element={<CancelReservationPage/>} />
           <Route path="/delete" element={<DeleteUser/>} />
+          <Route path="/notifications" element={<Notifications/>}/>
         </Routes>
       </div>
     </>

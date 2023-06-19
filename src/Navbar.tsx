@@ -1,6 +1,7 @@
 import { Link, useNavigate  } from 'react-router-dom';
 import { useLoggedUser } from "./hooks/UseLoggedUserInformation";
 import { UserType } from './model/User';
+import Notifications from './pages/Notifications';
   
 
 function Navbar() {
@@ -81,6 +82,7 @@ function Navbar() {
       </ul>
       
       <ul className="navbar-nav mr-auto" style={stylesRight}>
+        <Notifications/>
         <li className="nav-item active" >
           {loggedUser == null ? (
             <Link className="nav-link" to="/login">Login</Link>
