@@ -78,6 +78,10 @@ function Navbar() {
           <li className="nav-item active">
             <Link className="nav-link" to="/hostRatings">Ratings</Link>
           </li>)}
+          {loggedUser != null  && (
+          <li className="nav-item active" >
+            <Link className="nav-link" to="/settings">Notification Settings</Link>
+          </li>)}
 
       </ul>
       

@@ -4,12 +4,14 @@ export class PersonalMessage {
     notificationTime = '';
     userID = '';
     status = '';
-  
-    constructor(id: string, text: string, notificationTime: string, userID: string, status: string) {
+    category = '';
+
+    constructor(id: string, text: string, notificationTime: string, userID: string, status: string, category: string) {
       this.id = id;
       this.text = text;
       this.notificationTime = notificationTime;
       this.userID = userID;
       this.status = status;
+      this.category = category;
     }
   }
