@@ -135,6 +135,8 @@ const cancel = async (bookingId: string, e?: React.FormEvent<HTMLFormElement>) =
 
 
     const BuyTickets = async () => {
+      window.alert("Successfully bought");
+      window.location.reload();
       const response = await fetch("http://localhost:8082/buyTicketsExternal", {
         method: "POST",
         headers: {
@@ -147,8 +149,8 @@ const cancel = async (bookingId: string, e?: React.FormEvent<HTMLFormElement>) =
           numberOfTickets: tickets,
         }),
       }).then((response) => {
+      window.alert("Successfully bought");
         if (response.status === 200) {
-          window.alert("Successfully bought");
           window.location.reload();
         } else {
           window.alert("Some error occured, please try again");
