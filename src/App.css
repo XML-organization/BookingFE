@@ -3,3 +3,19 @@
     width: 500px;
   }
 
+/* CSS kod za stilizaciju dugmeta za čitanje notifikacije */
+.read-button {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.read-button:focus {
+  outline: none;
+}
+
+.read-button:hover .icon {
+  transform: scale(1.2);
+}
