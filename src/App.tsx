@@ -16,6 +16,7 @@ import CancelReservationPage from "./pages/CancelReservation";
 import DeleteUser from "./pages/DeleteUser";
 import Notifications from "./pages/Notifications";
 import NotificationSettings from "./pages/NotificationSettings";
+import GradeHost from "./pages/GradeHost";
 
 
 function App(){
@@ -44,6 +45,7 @@ function App(){
           <Route path="/delete" element={<DeleteUser/>} />
           <Route path="/notifications" element={<Notifications/>}/>
           <Route path="/settings" element={<NotificationSettings/>}/>
+          <Route path="/gradeHost" element={<GradeHost/>} />
         </Routes>
       </div>
     </>

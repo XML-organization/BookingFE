@@ -56,7 +56,11 @@ function Navbar() {
         </li>)}
         {loggedUser !=  null && (
         <li className="nav-item active">
-          <Link className="nav-link" to="/cancelReservation">Cancel reservation</Link>
+          <Link className="nav-link" to="/cancelReservation">Reservation</Link>
+        </li>)}
+        {loggedUser !=  null && (
+        <li className="nav-item active">
+          <Link className="nav-link" to="/gradeHost">Grade host</Link>
         </li>)}
         {loggedUser !=  null && (
         <li className="nav-item active">

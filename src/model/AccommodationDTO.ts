@@ -9,6 +9,7 @@ export class AccommodationDTO {
     pricePerGuest: string='';
     totalPrice: string='';
     idHost: string = '';
+    isExceptional: boolean=false;
 
     constructor(idHost:string, id:string, name: string, location: string, wifi: boolean, kitchen: boolean, airCondition: boolean, freeParking: boolean, price: string, totalPrice:string) {
       this.id = id;
