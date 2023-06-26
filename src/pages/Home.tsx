@@ -4,6 +4,8 @@ import { AccommodationDTO } from '../model/AccommodationDTO';
 import { useLoggedUser } from '../hooks/UseLoggedUserInformation';
 import { v4 as uuidv4 } from 'uuid';
 import { Link } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 var loggedUser = useLoggedUser();
 
@@ -26,6 +28,14 @@ function Home() {
   const [wasRated, setWasRated] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
 
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(0);
+  const [wifiChecked, setWifiChecked] = useState(false);
+  const [kitchenChecked, setKitchenChecked] = useState(false);
+  const [airConditionChecked, setAirConditionChecked] = useState(false);
+  const [parkingChecked, setParkingChecked] = useState(false);
+  const [isExcChecked, setIsExcChecked] = useState(false);
+  const [filteredAccommodations, setFilteredAccommodations] = useState<AccommodationDTO[]>([]);
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     if (id === "city") {
@@ -41,10 +51,65 @@ function Home() {
       setNumOfGuests(value);
     }
   };
+  const handlePriceInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    if (id === "minPrice") {
+      if (value.length!=0) {
+              setMinPrice(parseFloat(value));
+      }  
+    }
+    if (id === "maxPrice") {
+      if (value.length!=0) {
+      setMaxPrice(parseFloat(value));
+      }
+    }
+   
+  };
+
+  const handleCheckboxChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { id, checked } = e.target;
+    if (id === "wifi") {
+      setWifiChecked(checked);
+    }
+    if (id === "kitchen") {
+      setKitchenChecked(checked);
+    }
+    if (id === "airCondition") {
+      setAirConditionChecked(checked);
+    }
+    if (id === "parking") {
+      setParkingChecked(checked);   
+    }
+    if (id === "isExc") {
+      setIsExcChecked(checked);   
+    }
+    
+  };
+  const handleFilterButtonClick = () => {
+    setFilteredAccommodations(accomodations.filter((acc)=> acc.airCondition===airConditionChecked &&  acc.wifi===wifiChecked && acc.freeParking===parkingChecked && acc.kitchen===kitchenChecked && acc.isExceptional===isExcChecked && parseFloat(acc.totalPrice)> minPrice && parseFloat(acc.totalPrice)< maxPrice));
+
+  };
+
+  const handleCheckRateHost = async (idHost: string) => {
+    fetch(`http://localhost:8000/host/isExceptional/` + idHost, {
+      method: "GET",
+    })
+      .then(response => response.json())
+      .then(data => {
+        const isExceptional = JSON.parse(data.isExceptional);
+        if (isExceptional == true){
+          toast.info("Host is exceptional! :)");
+        }else{
+          toast.info("Host is not exceptional! :/");
+        }
+        console.log(data); // Log the entire data object
+      })
+      .catch(error => console.log(error));
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    fetch("http://localhost:8000/accomodation/search", {
+    const response = await fetch("http://localhost:8000/accomodation/search", {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -56,19 +121,46 @@ function Home() {
         endDate: endDate,
         numOfGuests: numOfGuests
       }),
-    })
-      .then(res => res.json())
-      .then((data) => {
-        console.log("Fetched data:", data);
-        setAccomodations(data.accommodationsDTO);
-        console.log("Updated accommodations:", accomodations);
-        setClicked(true);
-        setNoResults(data.accommodationsDTO.length === 0);
+    });
+  
+    if (!response.ok) {
+      console.error("Fetch error:", response.status);
+      return;
+    }
+  
+    const data = await response.json();
+    console.log("Fetched data:", data);
+    setAccomodations(data.accommodationsDTO);
+    setFilteredAccommodations(data.accommodationsDTO);
+    setClicked(true);
+    setNoResults(data.accommodationsDTO.length === 0);
+  
+    // Fetch additional data for each accommodation
+    const updatedAccommodations = await Promise.all(
+      data.accommodationsDTO.map(async (accommodation:AccommodationDTO) => {
+        const hostResponse = await fetch(`http://localhost:8000/host/isExceptional/`+ accommodation.idHost, {
+          method: "GET",
+        });
+  
+        if (!hostResponse.ok) {
+          console.error("Fetch error:", hostResponse.status);
+          return accommodation; // Return original accommodation if the additional data fetch fails
+        }
+  
+        const hostData = await hostResponse.json();
+        const isExceptional = hostData.isExceptional;
+  
+        return {
+          ...accommodation,
+          isExceptional: isExceptional
+        };
       })
-      .catch((error) => {
-        console.error("Fetch error:", error);
-      });
+    );
+  
+    setAccomodations(updatedAccommodations);
+    setFilteredAccommodations(updatedAccommodations);
   };
+  
 
   const handleMakeReservation = (accommodation: AccommodationDTO): void => {
     fetch("http://localhost:8000/booking/create", {
@@ -227,12 +319,16 @@ function Home() {
     setIsEditing(true)
   };
 
+
+
   return (
     <div>
       <blockquote className="blockquote text-center">
         <p className="mb-0">Search for accommodation:</p>
         <footer className="blockquote-footer">Enter all parameters!</footer>
       </blockquote>
+
+      <ToastContainer />
 
       <form className="col-md-6 mx-auto" onSubmit={handleSubmit}>
         <table className="table table-striped" style={{ width: '110%', marginLeft: "auto", marginRight: "auto" }}>
@@ -282,8 +378,116 @@ function Home() {
 
       {noResults && clicked && <div style={{ color: 'blue' }} >There are no accommodations for the given inputs!</div>}
 
-      {clicked && (
+      {clicked && noResults==false &&(
         <div>
+<div className="container">
+  <div className="row">
+    <div className="col">
+    <div className="form-inline d-flex">
+  <label htmlFor="minPrice">Min Price:</label>
+  <input
+    type="number"
+    className="form-control"
+    id="minPrice"
+    value={minPrice}
+    onChange={handlePriceInputChange}
+  />
+</div>
+
+    </div>
+    <div className="col">
+      <div className="form-inline d-flex">
+        <label htmlFor="maxPrice">Max Price:</label>
+        <input
+          type="number"
+          className="form-control"
+          id="maxPrice"
+          value={maxPrice}
+          onChange={handlePriceInputChange}
+        />
+      </div>
+    </div>
+    <div className="col">
+      <div className="form-group form-check">
+        <input
+          type="checkbox"
+          className="form-check-input"
+          id="wifi"
+          checked={wifiChecked}
+          onChange={handleCheckboxChange}
+        />
+        <label className="form-check-label" htmlFor="wifi">
+          Wifi
+        </label>
+      </div>
+    </div>
+    <div className="col">
+      <div className="form-group form-check">
+        <input
+          type="checkbox"
+          className="form-check-input"
+          id="kitchen"
+          checked={kitchenChecked}
+          onChange={handleCheckboxChange}
+        />
+        <label className="form-check-label" htmlFor="kitchen">
+          Kitchen
+        </label>
+      </div>
+    </div>
+    <div className="col">
+      <div className="form-group form-check">
+        <input
+          type="checkbox"
+          className="form-check-input"
+          id="airCondition"
+          checked={airConditionChecked}
+          onChange={handleCheckboxChange}
+        />
+        <label className="form-check-label" htmlFor="airCondition">
+          Air Condition
+        </label>
+      </div>
+    </div>
+    <div className="col">
+      <div className="form-group form-check">
+        <input
+          type="checkbox"
+          className="form-check-input"
+          id="parking"
+          checked={parkingChecked}
+          onChange={handleCheckboxChange}
+        />
+        <label className="form-check-label" htmlFor="parking">
+          Parking
+        </label>
+      </div>
+    </div>
+    <div className="col">
+      <div className="form-group form-check">
+        <input
+          type="checkbox"
+          className="form-check-input"
+          id="isExc"
+          checked={isExcChecked}
+          onChange={handleCheckboxChange}
+        />
+        <label className="form-check-label" htmlFor="isExc">
+        Exceptional
+        </label>
+      </div>
+    </div>
+    <div className="col">
+      <button className="btn btn-primary" onClick={handleFilterButtonClick}>
+        Filter
+      </button>
+    </div>
+  </div>
+</div>
+
+
+
+
           <table className="table table-striped" style={{ width: '100%', alignItems: "center", marginLeft: "auto", marginRight: "auto" }}>
             <thead className="thead-dark">
               <tr>
@@ -293,13 +497,14 @@ function Home() {
                 <th scope="col">Kitchen</th>
                 <th scope="col">AirCondition</th>
                 <th scope="col">FreeParking</th>
+                <th scope="col">Exceptional host</th>
                 <th scope="col">Price for a night</th>
                 <th scope="col">Total price</th>
                 <th scope="col"></th>
               </tr>
             </thead>
             <tbody>
-              {accomodations.map((accomodation, index) => (
+              {filteredAccommodations.map((accomodation, index) => (
                 <tr key={accomodation.name}>
                   <td>{accomodation.name}</td>
                   <td>{accomodation.location}</td>
@@ -307,6 +512,7 @@ function Home() {
                   <td>{accomodation.kitchen ? "Yes" : "No"}</td>
                   <td>{accomodation.airCondition ? "Yes" : "No"}</td>
                   <td>{accomodation.freeParking ? "Yes" : "No"}</td>
+                  <td>{accomodation.isExceptional ? "Yes" : "No"}</td>
                   <td>{accomodation.pricePerGuest ? "Yes" : "No"}</td>
                   <td>{accomodation.totalPrice}</td>
                   <td>
@@ -321,6 +527,12 @@ function Home() {
                       onClick={() => handleRateHost(accomodation)}
                     >
                       Rate Host
+                    </button>
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => handleCheckRateHost(accomodation.idHost)}
+                    >
+                      Check Host Rating
                     </button>
                   </td>
                 </tr>
