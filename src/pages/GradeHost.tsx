@@ -341,7 +341,7 @@ function GradeHost(){
                            </tr>
                        </thead>
                        <tbody>
-           {grades.map((grade, index) => (
+           {grades?.map((grade, index) => (
             <tr key={grade.id}>
               <td>{grade.userName}</td>
               <td>{grade.userSurname}</td>
